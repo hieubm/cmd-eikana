@@ -13,7 +13,27 @@ class KeyboardShortcut: NSObject {
     var flags: CGEventFlags
     
     init(_ event: CGEvent) {
-        self.keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+        print(event.type.rawValue)
+        if (event.type.rawValue == CGEventType.keyDown.rawValue ||
+            event.type.rawValue == CGEventType.keyUp.rawValue ||
+            event.type == CGEventType.flagsChanged) {
+            self.keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+        } else if (event.type.rawValue == CGEventType.otherMouseDown.rawValue ||
+                      event.type.rawValue == CGEventType.otherMouseUp.rawValue) {
+            self.keyCode = CGKeyCode(200 + event.getIntegerValueField(.mouseEventButtonNumber))
+        } else if (event.type == CGEventType.scrollWheel) {
+            print("wheel")
+            print(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
+            print(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
+            self.keyCode = CGKeyCode(210 + event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
+            print(self.keyCode)
+        } else {
+            print("wtf")
+            self.keyCode = 0
+        }
+        
+        print(self.keyCode)
+        
         self.flags = event.flags
         
         super.init()
@@ -269,6 +289,12 @@ let keyCodeDictionary: Dictionary<CGKeyCode, String> = [
     144: "BRIGHTNESS_UP",
     145: "BRIGHTNESS_DOWN",
     160: "Expose_All",
+    
+    // mouse key
+    203: "Mouse 4",
+    204: "Mouse 5",
+    209: "Tilt Left",
+    211: "Tilt Right",
     
     // media key (bata)
     999: "Disable",
