@@ -24,10 +24,10 @@ class KeyEvent: NSObject {
     }
 
     func start() {
-        NSWorkspace.shared.notificationCenter.addObserver(self,
-                                                            selector: #selector(KeyEvent.setActiveApp(_:)),
-                                                            name: NSWorkspace.didActivateApplicationNotification,
-                                                            object:nil)
+       NSWorkspace.shared.notificationCenter.addObserver(self,
+                                                           selector: #selector(KeyEvent.setActiveApp(_:)),
+                                                           name: NSWorkspace.didActivateApplicationNotification,
+                                                           object:nil)
 
         let checkOptionPrompt = kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString
         let options: CFDictionary = [checkOptionPrompt: true] as NSDictionary
@@ -48,7 +48,6 @@ class KeyEvent: NSObject {
     @objc func watchAXIsProcess(_ timer: Timer) {
         if AXIsProcessTrusted() {
             timer.invalidate()
-
             self.watch()
         }
     }
@@ -73,24 +72,24 @@ class KeyEvent: NSObject {
     func watch() {
         // マウスのドラッグバグ回避のため、NSEventとCGEventを併用
         // CGEventのみでやる方法を捜索中
-        let nsEventMaskList: NSEvent.EventTypeMask = [
-            .leftMouseDown,
-            .leftMouseUp,
-            .rightMouseDown,
-            .rightMouseUp,
-            .otherMouseDown,
-            .otherMouseUp,
-            .scrollWheel
-        ]
-
-        NSEvent.addGlobalMonitorForEvents(matching: nsEventMaskList) {(event: NSEvent) -> Void in
-            self.keyCode = nil
-        }
-
-        NSEvent.addLocalMonitorForEvents(matching: nsEventMaskList) {(event: NSEvent) -> NSEvent? in
-            self.keyCode = nil
-            return event
-        }
+//        let nsEventMaskList: NSEvent.EventTypeMask = [
+//            .leftMouseDown,
+//            .leftMouseUp,
+//            .rightMouseDown,
+//            .rightMouseUp,
+//            .otherMouseDown,
+//            .otherMouseUp,
+//            .scrollWheel
+//        ]
+//
+//        NSEvent.addGlobalMonitorForEvents(matching: nsEventMaskList) {(event: NSEvent) -> Void in
+//            self.keyCode = nil
+//        }
+//
+//        NSEvent.addLocalMonitorForEvents(matching: nsEventMaskList) {(event: NSEvent) -> NSEvent? in
+//            self.keyCode = nil
+//            return event
+//        }
 
         let eventMaskList = [
             CGEventType.keyDown.rawValue,
@@ -151,10 +150,12 @@ class KeyEvent: NSObject {
 //- Val-4 \(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
 //- Val-5 \(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
 //""")
-//        print(event.getIntegerValueField(CGEventField.mouseEventSubtype))
-//        print(event.getIntegerValueField(.keyboardEventKeycode))
-//        print("keyCode: \(KeyboardShortcut(event).)
-//        print(KeyboardShortcut(event).toString())
+
+        // print(event.getIntegerValueField(.keyboardEventKeycode))
+        // print("keyCode: \(KeyboardShortcut(event).keyCode)")
+        // print(KeyboardShortcut(event).toString())
+//        print(event.sour)
+
 
 //        print(event)
         switch type {
@@ -368,24 +369,24 @@ class KeyEvent: NSObject {
             return event
         }
 
-        print("kc \(shortcht.keyCode)")
+//        print("kc \(shortcht.keyCode)")
 
         if let mappingList = shortcutList[keyCode ?? shortcht.keyCode] {
-            print("kc \(mappingList)")
+//            print("kc \(mappingList)")
             if let mappings = hasConvertedEventLog,
                 shortcht.isCover(mappings.input) {
-                print("route 1")
-                print(mappings)
+//                print("route 1")
+//                print(mappings)
                 return getEvent(mappings)
             }
-            print("route 2")
+//            print("route 2")
             for mappings in mappingList {
                 if shortcht.isCover(mappings.input) {
                     return getEvent(mappings)
                 }
             }
         }
-        print("No mapping")
+//        print("No mapping")
         return nil
     }
 }
