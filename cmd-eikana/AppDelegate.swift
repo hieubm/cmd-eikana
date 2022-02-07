@@ -59,42 +59,64 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         
+        let profileValue = userDefaults.string(forKey: "profile")
+        print(type(of: profileValue))
+        if (profileValue == "mappings") {
+            profile = "mappings"
+        }
+        if (profileValue == "mappings_2") {
+            profile = "mappings_2"
+        }
+        
+//    
+//        print("hello")
+//        let test = "hi"
+//        print(test)
+//        
+//        print("[" + profile)
+//        
         // ショートカット設定
-        if let keyMappingListData = userDefaults.object(forKey: "mappings") as? [[AnyHashable: Any]] {
+        if let keyMappingListData = userDefaults.object(forKey: profile) as? [[AnyHashable: Any]] {
             for val in keyMappingListData {
                 if let mapping = KeyMapping(dictionary: val) {
                     keyMappingList.append(mapping)
                 }
             }
             
+            print(keyMappingList)
+
             keyMappingListToShortcutList()
         }
-        else {
-            if let oneShotModifiersData = userDefaults.object(forKey: "oneShotModifiers") as? [AnyObject] {
-                // v2.0.xからの引き継ぎ
-                for val in oneShotModifiersData {
-                    if let inputKeyCodeInt = val["input"] as? Int,
-                        let outputDic = val["output"] as? [AnyHashable: Any],
-                        let output = KeyboardShortcut(dictionary: outputDic)
-                    {
-                        keyMappingList.append(KeyMapping(input: KeyboardShortcut(keyCode: CGKeyCode(inputKeyCodeInt)),
-                                                         output: output))
-                    }
-                }
-                
-                userDefaults.removeObject(forKey: "oneShotModifiers")
-            }
-            else {
-                // 初期設定（左右のコマンドキー単体で英数/かな）
-                keyMappingList = [
-                    KeyMapping(input: KeyboardShortcut(keyCode: 55), output: KeyboardShortcut(keyCode: 102)),
-                    KeyMapping(input: KeyboardShortcut(keyCode: 54), output: KeyboardShortcut(keyCode: 104))
-                ]
-            }
-            
-            saveKeyMappings()
-            keyMappingListToShortcutList()
-        }
+        
+        
+        
+//
+//        else {
+//            if let oneShotModifiersData = userDefaults.object(forKey: "oneShotModifiers") as? [AnyObject] {
+//                // v2.0.xからの引き継ぎ
+//                for val in oneShotModifiersData {
+//                    if let inputKeyCodeInt = val["input"] as? Int,
+//                        let outputDic = val["output"] as? [AnyHashable: Any],
+//                        let output = KeyboardShortcut(dictionary: outputDic)
+//                    {
+//                        keyMappingList.append(KeyMapping(input: KeyboardShortcut(keyCode: CGKeyCode(inputKeyCodeInt)),
+//                                                         output: output))
+//                    }
+//                }
+//
+//                userDefaults.removeObject(forKey: "oneShotModifiers")
+//            }
+//            else {
+//                // 初期設定（左右のコマンドキー単体で英数/かな）
+//                keyMappingList = [
+//                    KeyMapping(input: KeyboardShortcut(keyCode: 55), output: KeyboardShortcut(keyCode: 102)),
+//                    KeyMapping(input: KeyboardShortcut(keyCode: 54), output: KeyboardShortcut(keyCode: 104))
+//                ]
+//            }
+//
+//            saveKeyMappings()
+//            keyMappingListToShortcutList()
+//        }
         
         ////////////////////////////
         // UIの初期化

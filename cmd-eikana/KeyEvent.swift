@@ -184,11 +184,56 @@ class KeyEvent: NSObject {
     func keyDown(_ event: CGEvent) -> Unmanaged<CGEvent>? {
         #if DEBUG
             // print("keyCode: \(KeyboardShortcut(event).keyCode)")
-             print(KeyboardShortcut(event).toString())
+//             print(KeyboardShortcut(event).toString())
         #endif
 
 //        print("keyCode: \(KeyboardShortcut(event).keyCode)")
 //        print(KeyboardShortcut(event).toString())
+        
+//        print("keyCode: \(KeyboardShortcut(event).keyCode)")
+        let keyCode = KeyboardShortcut(event).keyCode
+        
+        if (keyCode == 122 || keyCode == 120) {
+            if (keyCode == 122) {
+                // F1
+                profile = "mappings"
+                UserDefaults.standard.set("mappings" , forKey: "profile")
+            }
+            
+            if (keyCode == 120) {
+                // F2
+                profile = "mappings_2"
+                UserDefaults.standard.set("mappings_2" , forKey: "profile")
+            }
+            
+//            print(profile)
+            
+            
+            let url = URL(fileURLWithPath: Bundle.main.resourcePath!)
+            let path = url.deletingLastPathComponent().deletingLastPathComponent().absoluteString
+            let task = Process()
+            task.launchPath = "/usr/bin/open"
+            task.arguments = [path]
+            task.launch()
+            exit(0)
+            
+//            AppDelegate.restart(_:)
+            
+//            let userDefaults = UserDefaults.standard
+//
+//            keyMappingList = []
+//            if let keyMappingListData = userDefaults.object(forKey: profile) as? [[AnyHashable: Any]] {
+//                for val in keyMappingListData {
+//                    if let mapping = KeyMapping(dictionary: val) {
+//                        keyMappingList.append(mapping)
+//                    }
+//                }
+//
+//                print(keyMappingList)
+//
+//                keyMappingListToShortcutList()
+//            }
+        }
 
         self.keyCode = nil
 

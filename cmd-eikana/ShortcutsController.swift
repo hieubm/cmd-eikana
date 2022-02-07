@@ -11,10 +11,12 @@ import Cocoa
 
 var shortcutList: [CGKeyCode: [KeyMapping]] = [:]
 
+var profile: String = "mappings"
+
 var keyMappingList: [KeyMapping] = []
 
 func saveKeyMappings() {
-    UserDefaults.standard.set(keyMappingList.map {$0.toDictionary()} , forKey: "mappings")
+    UserDefaults.standard.set(keyMappingList.map {$0.toDictionary()} , forKey: profile)
 }
 
 func keyMappingListToShortcutList() {

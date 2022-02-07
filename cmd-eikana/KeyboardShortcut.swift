@@ -13,7 +13,7 @@ class KeyboardShortcut: NSObject {
     var flags: CGEventFlags
     
     init(_ event: CGEvent) {
-        print(event.type.rawValue)
+//        print(event.type.rawValue)
         if (event.type.rawValue == CGEventType.keyDown.rawValue ||
             event.type.rawValue == CGEventType.keyUp.rawValue ||
             event.type == CGEventType.flagsChanged) {
@@ -22,17 +22,17 @@ class KeyboardShortcut: NSObject {
                       event.type.rawValue == CGEventType.otherMouseUp.rawValue) {
             self.keyCode = CGKeyCode(200 + event.getIntegerValueField(.mouseEventButtonNumber))
         } else if (event.type == CGEventType.scrollWheel) {
-            print("wheel")
-            print(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
-            print(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
+//            print("wheel")
+//            print(event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
+//            print(event.getIntegerValueField(.scrollWheelEventDeltaAxis1))
             self.keyCode = CGKeyCode(210 + event.getIntegerValueField(.scrollWheelEventDeltaAxis2))
-            print(self.keyCode)
+//            print(self.keyCode)
         } else {
-            print("wtf")
+//            print("wtf")
             self.keyCode = 0
         }
         
-        print(self.keyCode)
+//        print(self.keyCode)
         
         self.flags = event.flags
         
