@@ -187,35 +187,57 @@ class KeyEvent: NSObject {
 //             print(KeyboardShortcut(event).toString())
         #endif
 
-//        print("keyCode: \(KeyboardShortcut(event).keyCode)")
+        print("keyCode: \(KeyboardShortcut(event).keyCode)")
 //        print(KeyboardShortcut(event).toString())
         
 //        print("keyCode: \(KeyboardShortcut(event).keyCode)")
         let keyCode = KeyboardShortcut(event).keyCode
         
-        if (keyCode == 122 || keyCode == 120) {
-            if (keyCode == 122) {
+        
+        print(event.flags)
+        
+        if (keyCode == 122) {
                 // F1
-                profile = "mappings"
-                UserDefaults.standard.set("mappings" , forKey: "profile")
-            }
+                if (profile == "mappings") {
+                    profile = "mappings_2"
+                } else if (profile == "mappings_2") {
+                    profile = "mappings_3"
+                } else {
+                    profile = "mappings"
+                }
             
-            if (keyCode == 120) {
-                // F2
-                profile = "mappings_2"
-                UserDefaults.standard.set("mappings_2" , forKey: "profile")
-            }
+//            if (keyCode == 120) {
+//                // F2
+//                profile = "mappings_2"
+//                UserDefaults.standard.set("mappings_2" , forKey: "profile")
+//            }
+//
+//            if (keyCode == 99) {
+//                // F3
+//                profile = "mappings_3"
+//                UserDefaults.standard.set("mappings_3" , forKey: "profile")
+//            }
+            
+            UserDefaults.standard.set(profile , forKey: "profile")
+            
             
 //            print(profile)
+//            alert.messageText = "Profile chosen"
+//            alert.informativeText = profile
+//            alert.addButton(withTitle: "OK")
+//            if (alert.runModal() == .alertFirstButtonReturn) {
+                let url = URL(fileURLWithPath: Bundle.main.resourcePath!)
+                let path = url.deletingLastPathComponent().deletingLastPathComponent().absoluteString
+                let task = Process()
+                task.launchPath = "/usr/bin/open"
+                task.arguments = [path]
+                task.launch()
+                exit(0)
+                
+//            }
             
             
-            let url = URL(fileURLWithPath: Bundle.main.resourcePath!)
-            let path = url.deletingLastPathComponent().deletingLastPathComponent().absoluteString
-            let task = Process()
-            task.launchPath = "/usr/bin/open"
-            task.arguments = [path]
-            task.launch()
-            exit(0)
+            
             
 //            AppDelegate.restart(_:)
             

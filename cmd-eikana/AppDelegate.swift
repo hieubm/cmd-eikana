@@ -60,20 +60,38 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         let profileValue = userDefaults.string(forKey: "profile")
-        print(type(of: profileValue))
+                
+//        print(type(of: profileValue))
         if (profileValue == "mappings") {
             profile = "mappings"
         }
         if (profileValue == "mappings_2") {
             profile = "mappings_2"
         }
+        if (profileValue == "mappings_3") {
+            profile = "mappings_3"
+        }
+        
+//        let center = UNUserNotificationCenter.current()
+//
+//
+//        let authOptions = UNAuthorizationOptions.init(arrayLiteral: .alert, .badge, .sound)
+//
+        
+        let notification = NSUserNotification()
+        notification.title = "Loaded profile"
+        notification.subtitle = profile
+        notification.soundName = NSUserNotificationDefaultSoundName
+        NSUserNotificationCenter.default.deliver(notification)
+        
+        print("[" + profile)
         
 //    
 //        print("hello")
 //        let test = "hi"
 //        print(test)
 //        
-//        print("[" + profile)
+
 //        
         // ショートカット設定
         if let keyMappingListData = userDefaults.object(forKey: profile) as? [[AnyHashable: Any]] {
@@ -138,7 +156,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
         
         menu.addItem(withTitle: "About KeyMapper \(version)", action: #selector(AppDelegate.open(_:)), keyEquivalent: "")
-        menu.addItem(withTitle: "Preferences...", action: #selector(AppDelegate.openPreferencesSerector(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Preferences..." + profile, action: #selector(AppDelegate.openPreferencesSerector(_:)), keyEquivalent: "")
         menu.addItem(NSMenuItem.separator())
         menu.addItem(withTitle: "Restart", action: #selector(AppDelegate.restart(_:)), keyEquivalent: "")
         menu.addItem(withTitle: "Quit", action: #selector(AppDelegate.quit(_:)), keyEquivalent: "")
