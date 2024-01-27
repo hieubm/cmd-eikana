@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Foundation
 
 var activeAppsList: [AppData] = []
 var exclusionAppsList: [AppData] = []
@@ -94,11 +95,13 @@ class KeyEvent: NSObject {
         let eventMaskList = [
             CGEventType.keyDown.rawValue,
             CGEventType.keyUp.rawValue,
+//            CGEventType.mediaKeyDown.rawValue,
+//            CGEventType.mediaKeyUp.rawValue,
             CGEventType.flagsChanged.rawValue,
             CGEventType.otherMouseDown.rawValue,
             CGEventType.otherMouseUp.rawValue,
             CGEventType.scrollWheel.rawValue,
-
+            UInt32(NX_SYSDEFINED) // Media key Event
         ]
         var eventMask: UInt32 = 0
 
@@ -180,6 +183,23 @@ class KeyEvent: NSObject {
             return Unmanaged.passUnretained(event)
         }
     }
+    
+    func shell(_ command: String) -> String {
+        let task = Process()
+        let pipe = Pipe()
+        
+        task.standardOutput = pipe
+        task.standardError = pipe
+        task.arguments = ["-c", command]
+        task.launchPath = "/bin/zsh"
+        task.standardInput = nil
+        task.launch()
+        
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)!
+        
+        return output
+    }
 
     func keyDown(_ event: CGEvent) -> Unmanaged<CGEvent>? {
         #if DEBUG
@@ -187,17 +207,24 @@ class KeyEvent: NSObject {
 //             print(KeyboardShortcut(event).toString())
         #endif
 
-        print("keyCode: \(KeyboardShortcut(event).keyCode)")
-//        print(KeyboardShortcut(event).toString())
         
 //        print("keyCode: \(KeyboardShortcut(event).keyCode)")
-        let keyCode = KeyboardShortcut(event).keyCode
+        let originalKeyShortcut = KeyboardShortcut(event)
+        let keyCode = originalKeyShortcut.keyCode
+        print("keyCode: \(keyCode)")
         
         
         print(event.flags)
         
+//        if (keyCode == 120) {
+//            let _ = shell("/usr/local/bin/brightness 0.4")
+//        }
+        
         if (keyCode == 122) {
-                // F1
+            // F1
+            let keyShortcut = KeyboardShortcut(event)
+            if keyShortcut.isCommandDown() && keyShortcut.isShiftDown() {
+                // Cmd + F1
                 if (profile == "mappings") {
                     profile = "mappings_2"
                 } else if (profile == "mappings_2") {
@@ -206,26 +233,8 @@ class KeyEvent: NSObject {
                     profile = "mappings"
                 }
             
-//            if (keyCode == 120) {
-//                // F2
-//                profile = "mappings_2"
-//                UserDefaults.standard.set("mappings_2" , forKey: "profile")
-//            }
-//
-//            if (keyCode == 99) {
-//                // F3
-//                profile = "mappings_3"
-//                UserDefaults.standard.set("mappings_3" , forKey: "profile")
-//            }
-            
-            UserDefaults.standard.set(profile , forKey: "profile")
-            
-            
-//            print(profile)
-//            alert.messageText = "Profile chosen"
-//            alert.informativeText = profile
-//            alert.addButton(withTitle: "OK")
-//            if (alert.runModal() == .alertFirstButtonReturn) {
+                UserDefaults.standard.set(profile , forKey: "profile")
+                
                 let url = URL(fileURLWithPath: Bundle.main.resourcePath!)
                 let path = url.deletingLastPathComponent().deletingLastPathComponent().absoluteString
                 let task = Process()
@@ -233,28 +242,8 @@ class KeyEvent: NSObject {
                 task.arguments = [path]
                 task.launch()
                 exit(0)
+            }
                 
-//            }
-            
-            
-            
-            
-//            AppDelegate.restart(_:)
-            
-//            let userDefaults = UserDefaults.standard
-//
-//            keyMappingList = []
-//            if let keyMappingListData = userDefaults.object(forKey: profile) as? [[AnyHashable: Any]] {
-//                for val in keyMappingListData {
-//                    if let mapping = KeyMapping(dictionary: val) {
-//                        keyMappingList.append(mapping)
-//                    }
-//                }
-//
-//                print(keyMappingList)
-//
-//                keyMappingListToShortcutList()
-//            }
         }
 
         self.keyCode = nil
@@ -268,7 +257,19 @@ class KeyEvent: NSObject {
         }
 
         if hasConvertedEvent(event) {
+//            print("Has event")
             if let event = getConvertedEvent(event) {
+                let convertedKeyShortcut = KeyboardShortcut(event)
+//                print("Converted Shortcut")
+//                print(convertedKeyShortcut.keyCode)
+                
+                if convertedKeyShortcut.keyCode >= 98 && convertedKeyShortcut.keyCode <= 122 {
+                    // Forward to Python if the target hotkey is Function keys
+//                    print("Forwarded to Python")
+                    let ret = shell("/usr/bin/python3 /Users/hieubm/Works/tools/key_mapper/main.py \(originalKeyShortcut.keyCode) \(originalKeyShortcut.isCommandDown() ? 1 : 0) \(originalKeyShortcut.isShiftDown() ? 1 : 0)")
+                    print(ret)
+                    return nil
+                }
                 return Unmanaged.passUnretained(event)
             }
             return nil
@@ -328,13 +329,26 @@ class KeyEvent: NSObject {
         #endif
 
         self.keyCode = nil
+        
+        
+//        print(KeyboardShortcut(event).toString())
+        
+//        print("keyCode: \(KeyboardShortcut(event).keyCode)")
+//        let keyCode = KeyboardShortcut(mediaKeyEvent).keyCode
+//        print("keyCode: \(keyCode)")
+        
+//        print(mediaKeyEvent.flags)
+        print("mediake")
+        print(KeyboardShortcut(keyCode: CGKeyCode(1000 + mediaKeyEvent.keyCode), flags: mediaKeyEvent.flags).toString())
+        
 
         if let keyTextField = activeKeyTextField {
-            if keyTextField.isAllowModifierOnly {
+//            if keyTextField.isAllowModifierOnly {
+            print("media text field")
                 keyTextField.shortcut = KeyboardShortcut(keyCode: CGKeyCode(1000 + mediaKeyEvent.keyCode),
                                                          flags: mediaKeyEvent.flags)
                 keyTextField.stringValue = keyTextField.shortcut!.toString()
-            }
+//            }
 
             return nil
         }
@@ -382,6 +396,7 @@ class KeyEvent: NSObject {
         var event = event
 
         if event.type.rawValue == UInt32(NX_SYSDEFINED) {
+            print("Convert media event")
             let flags = MediaKeyEvent(event)!.flags
             event = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: true)!
             event.flags = flags
