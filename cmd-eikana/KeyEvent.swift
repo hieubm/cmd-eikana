@@ -257,7 +257,7 @@ class KeyEvent: NSObject {
                 if convertedKeyShortcut.keyCode >= 98 && convertedKeyShortcut.keyCode <= 122 {
                     // Forward to Python if the target hotkey is Function keys
 //                    print("Forwarded to Python")
-                    let ret = shell("/usr/bin/python3 /Users/hieubm/Works/tools/key_mapper/main.py \(originalKeyShortcut.keyCode) \(originalKeyShortcut.isCommandDown() ? 1 : 0) \(originalKeyShortcut.isShiftDown() ? 1 : 0)")
+                    let ret = shell("/usr/bin/python3 ~/Works/tools/key_mapper/main.py \(originalKeyShortcut.keyCode) \(originalKeyShortcut.isCommandDown() ? 1 : 0) \(originalKeyShortcut.isShiftDown() ? 1 : 0)")
 //                    print(ret)
                     return nil
                 }
