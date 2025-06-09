@@ -19,9 +19,11 @@ class KeyEvent: NSObject {
     var isExclusionApp = false
     let bundleId = Bundle.main.infoDictionary?["CFBundleIdentifier"] as! String
     var hasConvertedEventLog: KeyMapping? = nil
+    var config: [String: Any] = [:]
 
     override init() {
         super.init()
+        
     }
 
     func start() {
